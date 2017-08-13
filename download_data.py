@@ -5,7 +5,7 @@ import quandl as qdl
 import requests
 import datetime
 
-#qdl.ApiConfig.api_key = "KEY-HERE"
+qdl.ApiConfig.api_key = "KEY"
 
 def get_soup(url):
 	"""
@@ -37,7 +37,7 @@ def get_from_symbol(symbol, **kwargs):
     df['GOING_UP'] = 0
     for i in range(1, len(df)):
         if df['Adj. Close'].values[i] > df['Adj. Close'].values[i-1]:
-            df['GOING_UP'].values[i] = 1
+            df['GOING_UP'].values[i-1] = 1
     return df
 
 
@@ -46,6 +46,12 @@ def get_dataset():
 	dow_tickers = [i.text for n, i in enumerate(get_dow_list()) if n < 31 and len(i.text) <= 5]
 	sp_tickers = [i.text for n, i in enumerate(get_sp_list()) if n%2==0 and len(i.text) <= 5 and '.' not in i]
 	for symbol in dow_tickers:
+		try:
+			print(symbol)
+			dataset[symbol] = get_from_symbol(symbol,collapse='daily', start_date='2015-01-01')
+		except:
+			print('FAIL')
+	for symbol in sp_tickers:
 		try:
 			print(symbol)
 			dataset[symbol] = get_from_symbol(symbol,collapse='daily', start_date='2015-01-01')
